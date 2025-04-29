@@ -1,0 +1,113 @@
+{
+ "version": "auto-py-to-exe-configuration_v1",
+ "pyinstallerOptions": [
+  {
+   "optionDest": "noconfirm",
+   "value": true
+  },
+  {
+   "optionDest": "filenames",
+   "value": "C:/RNPs/slides/main.py"
+  },
+  {
+   "optionDest": "onefile",
+   "value": false
+  },
+  {
+   "optionDest": "console",
+   "value": false
+  },
+  {
+   "optionDest": "icon_file",
+   "value": "C:/RNPs/slides/assets/mainicon.ico"
+  },
+  {
+   "optionDest": "name",
+   "value": "PPTCommandExecutor"
+  },
+  {
+   "optionDest": "contents_directory",
+   "value": "bin"
+  },
+  {
+   "optionDest": "clean_build",
+   "value": true
+  },
+  {
+   "optionDest": "optimize",
+   "value": "2"
+  },
+  {
+   "optionDest": "strip",
+   "value": false
+  },
+  {
+   "optionDest": "noupx",
+   "value": false
+  },
+  {
+   "optionDest": "disable_windowed_traceback",
+   "value": false
+  },
+  {
+   "optionDest": "uac_admin",
+   "value": true
+  },
+  {
+   "optionDest": "uac_uiaccess",
+   "value": false
+  },
+  {
+   "optionDest": "argv_emulation",
+   "value": false
+  },
+  {
+   "optionDest": "bootloader_ignore_signals",
+   "value": false
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "flask"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "flask_cors"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "socketio"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "gevent"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "geventwebsocket"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "PIL"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "customtkinter"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "qrcode"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "pyautogui"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/RNPs/slides/assets;assets/"
+  }
+ ],
+ "nonPyinstallerOptions": {
+  "increaseRecursionLimit": true,
+  "manualArguments": ""
+ }
+}
