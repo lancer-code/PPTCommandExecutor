@@ -1,8 +1,8 @@
 # PPT Command Executor
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/your-username/ppt-command-executor?color=blue&style=flat-square)
-![GitHub license](https://img.shields.io/github/license/your-username/ppt-command-executor?style=flat-square)
-![GitHub issues](https://img.shields.io/github/issues/your-username/ppt-command-executor?style=flat-square)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/lancer-code/ppt-command-executor?color=blue&style=flat-square)
+![GitHub license](https://img.shields.io/github/license/lancer-code/ppt-command-executor?style=flat-square)
+![GitHub issues](https://img.shields.io/github/issues/lancer-code/ppt-command-executor?style=flat-square)
 
 ---
 
