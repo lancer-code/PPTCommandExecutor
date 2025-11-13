@@ -8,13 +8,14 @@ from PIL import Image, ImageTk
 
 from .config import (
     APP_NAME, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BG_COLOR,
-    FAVICON_PNG, FAVICON_ICO
+    FAVICON_PNG, FAVICON_ICO, ASSETS_DIR
 )
 from .platform import get_platform_handler
 from .network.utils import get_local_ip, check_network_connection, find_free_port
 from .server.socket_server import PPTServer
 from .gui.screens import FirstScreen, SecondScreen
 from .gui.widgets import ErrorDialog
+from .utils import validate_asset_paths, validate_config
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +50,13 @@ class App(ctk.CTk):
             else:
                 logger.info("Continuing without admin privileges (firewall configuration will be skipped)")
 
+        # Validate assets
+        self._validate_assets()
+
         # Initialize server
         self.server = PPTServer()
         self.server_thread = None
+        self.server_starting = False  # Flag to prevent concurrent starts
         self.url = ''
         self.port = 0
 
@@ -97,13 +102,28 @@ class App(ctk.CTk):
         self.screens[screen_name].pack(fill="both", expand=True)
         logger.info(f"Showing screen: {screen_name}")
 
+    def _validate_assets(self):
+        """Validate that required assets exist."""
+        all_exist, missing = validate_asset_paths(ASSETS_DIR, FAVICON_PNG)
+
+        if not all_exist:
+            logger.warning(f"Some assets are missing: {missing}")
+            logger.info("Application will continue with limited functionality")
+
     def start_server(self):
         """Start the server in a background thread."""
+        # Prevent concurrent server starts
+        if self.server_starting:
+            logger.warning("Server start already in progress")
+            return
+
         if not check_network_connection():
             self.status_var.set("No network connection")
             logger.error("Cannot start server: No network connection")
+            ErrorDialog.show(self, "Cannot start server: No network connection detected")
             return
 
+        self.server_starting = True
         self.status_var.set("Starting server...")
         logger.info("Starting server...")
 
@@ -118,7 +138,13 @@ class App(ctk.CTk):
         """Run the server (called in background thread)."""
         try:
             # Find a free port
-            self.port = find_free_port()
+            try:
+                self.port = find_free_port()
+            except RuntimeError as e:
+                logger.error(f"Port exhaustion: {e}")
+                self.status_var.set("Error: No available ports")
+                ErrorDialog.show(self, "Failed to find an available port. Please close some applications and try again.")
+                return
 
             # Create firewall rule
             success, error_msg = self.platform_handler.create_firewall_rule(self.port)
@@ -130,13 +156,24 @@ class App(ctk.CTk):
             # Build server URL
             local_ip = get_local_ip()
             self.url = f"{local_ip}:{self.port}"
+            logger.info(f"Server URL: {self.url}")
 
             # Start the server
             self.server.start(self.port)
 
-        except Exception as e:
-            logger.error(f"Error starting server: {e}")
+        except ValueError as e:
+            # Invalid port
+            logger.error(f"Port validation error: {e}")
+            self.status_var.set(f"Configuration error: {e}")
+        except RuntimeError as e:
+            # Server already running or other runtime error
+            logger.error(f"Runtime error starting server: {e}")
             self.status_var.set(f"Error: {e}")
+        except Exception as e:
+            logger.error(f"Unexpected error starting server: {e}", exc_info=True)
+            self.status_var.set(f"Error: {e}")
+        finally:
+            self.server_starting = False
 
     def get_status(self):
         """
