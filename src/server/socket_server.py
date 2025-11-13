@@ -2,6 +2,7 @@
 
 import logging
 import gevent
+from gevent.lock import Semaphore
 from enum import Enum
 from flask import Flask
 from flask_cors import CORS
@@ -39,7 +40,7 @@ class PPTServer:
 
         # Server state
         self.state = ServerState.STOPPED
-        self._state_lock = gevent.lock.Semaphore()
+        self._state_lock = Semaphore()
 
         # Connection state
         self.client_connected = False
