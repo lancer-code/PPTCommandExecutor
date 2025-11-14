@@ -19,7 +19,7 @@ The application creates a local server on your machine, accessible via a QR code
 - **Remote Control**: Control PowerPoint presentations from any device using a simple web interface.
 - **QR Code Connection**: Generate a QR code for quick and easy device connection without manual IP configuration.
 - **Single Client Connection**: Ensures only one client is connected at a time, automatically disconnecting the previous client when a new one joins.
-- **Cross-Platform Compatibility**: Works on Windows, with potential support for macOS and Linux (requires testing).
+- **Cross-Platform Compatibility**: Works on Windows, macOS, and Linux with platform-specific optimizations.
 - **Modern GUI**: Built with `customtkinter` for a sleek, dark-themed interface.
 - **Firewall Management**: Automatically adds and removes Windows firewall rules for the server port.
 - **Error Handling**: Displays user-friendly error messages for network issues, admin privileges, and missing assets.
@@ -38,14 +38,16 @@ The application creates a local server on your machine, accessible via a QR code
 
 ### Prerequisites
 - **Python 3.8 or higher** (if running from source)
-- **Windows operating system** (admin privileges required for firewall rules)
-- **PowerPoint** installed on the host machine
+- **Operating System**: Windows, macOS, or Linux
+  - Windows: Admin privileges required for firewall rules
+  - macOS/Linux: Firewall configuration is optional
+- **PowerPoint** or compatible presentation software installed on the host machine
 
 ### Option 1: Run from Source
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/ppt-command-executor.git
-   cd ppt-command-executor
+   git clone https://github.com/lancer-code/PPTCommandExecutor.git
+   cd PPTCommandExecutor
    ```
 
 2. **Install Dependencies**:
@@ -59,15 +61,19 @@ The application creates a local server on your machine, accessible via a QR code
    ```
 
 3. **Run the Application**:
-   Launch the script with admin privileges (required for firewall modifications):
    ```bash
-   python ppt_command_executor.py
+   python main.py
    ```
+   - **Windows**: Run as Administrator (right-click → "Run as Administrator")
+   - **macOS/Linux**: Admin privileges optional (only needed for firewall configuration)
 
 ### Option 2: Use the Pre-Built Executable
-For Windows users, download the pre-built `.exe` file from the [Releases](https://github.com/your-username/ppt-command-executor/releases) section. No Python installation is required:
-1. Download the latest release (e.g., `PPT-Command-Executor-v1.0.0.exe`).
-2. Run the `.exe` file with administrator privileges.
+For Windows and macOS users, download the pre-built executable from the [Releases](https://github.com/lancer-code/PPTCommandExecutor/releases) section. No Python installation is required:
+1. Download the latest release for your platform:
+   - Windows: `PPTCommandExecutor.exe`
+   - macOS: `PPTCommandExecutor.app`
+2. **Windows**: Right-click the `.exe` and select "Run as Administrator"
+   **macOS**: Right-click the `.app` and select "Open" (for first launch)
 3. Follow the on-screen instructions to start the server and connect a client.
 
 ---
@@ -109,17 +115,28 @@ The project uses the following Python libraries:
 - `gevent` and `gevent-websocket`: Asynchronous server handling.
 
 ### Building the Executable
-To build the `.exe` yourself:
-1. Install PyInstaller:
-   ```bash
-   pip install pyinstaller
-   ```
-2. Run the following command to bundle the application:
-   ```bash
-   pyinstaller --onefile --windowed --icon=./bin/assets/favicon.ico --add-data "bin/assets;bin/assets" ppt_command_executor.py
-   ```
-   - On macOS/Linux, use `--add-data "bin/assets:bin/assets"` instead.
-3. The `.exe` will be generated in the `dist` folder.
+To build the executable yourself, use the automated build scripts:
+
+**Windows:**
+```bash
+pip install pyinstaller
+python build_windows.py
+```
+
+**macOS:**
+```bash
+pip install pyinstaller
+python build_macos.py
+```
+
+**Linux:**
+```bash
+pip install pyinstaller
+python build_spec.py
+pyinstaller PPTCommandExecutor.spec
+```
+
+For detailed instructions, see [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) or [QUICK_BUILD.md](QUICK_BUILD.md).
 
 ---
 
@@ -161,4 +178,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## ❓ Support
 
-For support or issues, please open an issue on the [GitHub Issues page](https://github.com/your-username/ppt-command-executor/issues).
+For support or issues, please open an issue on the [GitHub Issues page](https://github.com/lancer-code/PPTCommandExecutor/issues).
