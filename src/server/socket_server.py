@@ -12,6 +12,7 @@ from geventwebsocket.handler import WebSocketHandler
 import engineio.async_drivers.gevent
 
 from .command_handler import CommandHandler
+from ..gui.laser_overlay import LaserPointerOverlay
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ class PPTServer:
 
         self.sio = None
         self.command_handler = CommandHandler()
+        self.laser_overlay = LaserPointerOverlay()
         self.server = None
         self.port = None
 
@@ -127,6 +129,43 @@ class PPTServer:
                 except Exception:
                     pass
 
+        @self.sio.event
+        def laser_pointer_toggle(sid, data):
+            """Handle laser pointer enable/disable."""
+            if sid != self.current_client_sid:
+                logger.warning(f"Laser toggle rejected from unauthorized client {sid}")
+                return
+
+            try:
+                enabled = data.get('enabled', False) if isinstance(data, dict) else False
+                logger.info(f"Laser pointer toggle: {enabled}")
+
+                if enabled:
+                    self.laser_overlay.enable()
+                else:
+                    self.laser_overlay.disable()
+            except Exception as e:
+                logger.error(f"Error handling laser pointer toggle: {e}")
+
+        @self.sio.event
+        def laser_pointer_move(sid, data):
+            """Handle laser pointer movement (60 Hz)."""
+            if sid != self.current_client_sid:
+                return  # Silent reject for high-frequency events
+
+            try:
+                if not isinstance(data, dict):
+                    return
+
+                x = data.get('x', 0.5)
+                y = data.get('y', 0.5)
+
+                # Update overlay position (non-blocking)
+                if self.laser_overlay.enabled:
+                    self.laser_overlay.update_position(x, y)
+            except Exception as e:
+                logger.error(f"Error handling laser pointer move: {e}")
+
     def start(self, port):
         """
         Start the server on the specified port.
@@ -210,6 +249,13 @@ class PPTServer:
             self.state = ServerState.STOPPING
 
         logger.info("Stopping server")
+
+        # Disable laser overlay
+        if self.laser_overlay:
+            try:
+                self.laser_overlay.disable()
+            except Exception as e:
+                logger.error(f"Error disabling laser overlay: {e}")
 
         # Notify clients about shutdown
         if self.sio and self.client_connected:
