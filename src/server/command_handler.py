@@ -147,12 +147,12 @@ class CommandHandler:
 
     @safe_keypress
     def play_video(self):
-        """Play video in presentation."""
-        logger.debug("Pressing 'space' key to play video")
-        pyautogui.press("space")
+        """Play video in presentation using Alt+P."""
+        logger.debug("Pressing 'Alt+P' to play video")
+        pyautogui.hotkey('alt', 'p')
 
     @safe_keypress
     def pause_video(self):
-        """Pause video in presentation."""
-        logger.debug("Pressing 'space' key to pause video")
-        pyautogui.press("space")
+        """Pause video in presentation using Alt+P."""
+        logger.debug("Pressing 'Alt+P' to pause video")
+        pyautogui.hotkey('alt', 'p')

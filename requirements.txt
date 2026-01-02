@@ -1,10 +1,10 @@
-customtkinter==5.2.2 
-flask==3.1.0 
-flask-cors==4.0.1 
-python-socketio==5.13.0 
-pyautogui==0.9.54 
+customtkinter==5.2.2
+flask==3.1.0
+flask-cors==4.0.1
+python-socketio==5.13.0
+pyautogui==0.9.54
 gevent==25.4.2
-gevent-websocket==0.10.1 
-qrcode==7.4.2 
+gevent-websocket==0.10.1
+qrcode==7.4.2
 Pillow==10.4.0
 auto-py-to-exe==2.46.0
