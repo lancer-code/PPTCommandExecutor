@@ -1,8 +1,21 @@
 """Command handler for PowerPoint presentation control."""
 
-import pyautogui
+import sys
+import subprocess
 import logging
 from functools import wraps
+
+# Linux-specific: Enable X11 access for pyautogui on Wayland
+# Must run before importing pyautogui
+if sys.platform == 'linux':
+    try:
+        subprocess.run(['xhost', '+local:'], capture_output=True, check=False)
+    except FileNotFoundError:
+        pass
+    except Exception:
+        pass
+
+import pyautogui
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +66,8 @@ class CommandHandler:
             "END_SLIDESHOW": self.end_slideshow,
             "HOME": self.go_to_first_slide,
             "END": self.go_to_last_slide,
+            "PLAY_VIDEO": self.play_video,
+            "PAUSE_VIDEO": self.pause_video,
         }
 
     def handle_command(self, command):
@@ -129,3 +144,15 @@ class CommandHandler:
         """Go to the last slide."""
         logger.debug("Pressing 'End' key for last slide")
         pyautogui.press("end")
+
+    @safe_keypress
+    def play_video(self):
+        """Play video in presentation."""
+        logger.debug("Pressing 'space' key to play video")
+        pyautogui.press("space")
+
+    @safe_keypress
+    def pause_video(self):
+        """Pause video in presentation."""
+        logger.debug("Pressing 'space' key to pause video")
+        pyautogui.press("space")
