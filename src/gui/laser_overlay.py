@@ -20,6 +20,8 @@ class LaserPointerOverlay:
         self.current_x = 100
         self.current_y = 100
         self.last_update_time = time.time()
+        self.color = 'red'  # Default color
+        self.size = 20      # Default size (diameter in pixels)
 
     def enable(self):
         """Create and show overlay window."""
@@ -46,14 +48,14 @@ class LaserPointerOverlay:
             )
             self.canvas.pack(fill=tk.BOTH, expand=True)
 
-            # Create laser dot (red circle, 20px diameter)
-            radius = 10
+            # Create laser dot using current color and size
+            radius = self.size // 2
             self.dot = self.canvas.create_oval(
                 self.current_x - radius,
                 self.current_y - radius,
                 self.current_x + radius,
                 self.current_y + radius,
-                fill='red', outline='red'
+                fill=self.color, outline=self.color
             )
 
             # Platform-specific click-through setup
@@ -118,8 +120,8 @@ class LaserPointerOverlay:
 
             # Target 60 FPS (16.67ms per frame)
             if elapsed >= 0.016:
-                # Update dot position on canvas
-                radius = 10
+                # Update dot position on canvas using current size
+                radius = self.size // 2
                 self.canvas.coords(
                     self.dot,
                     self.current_x - radius,
@@ -163,3 +165,34 @@ class LaserPointerOverlay:
             logger.debug("Windows click-through enabled for laser pointer overlay")
         except Exception as e:
             logger.warning(f"Could not enable Windows click-through: {e}")
+
+    def set_color(self, color):
+        """
+        Set laser pointer color.
+
+        Args:
+            color (str): Color name - 'red', 'green', or 'blue'
+        """
+        valid_colors = ['red', 'green', 'blue']
+        if color not in valid_colors:
+            logger.warning(f"Invalid color '{color}', using 'red'")
+            color = 'red'
+
+        self.color = color
+        logger.info(f"Laser pointer color set to {color}")
+
+        # Update dot color if overlay is active
+        if self.enabled and self.canvas and self.dot:
+            self.canvas.itemconfig(self.dot, fill=color, outline=color)
+
+    def set_size(self, size):
+        """
+        Set laser pointer size.
+
+        Args:
+            size (int): Dot diameter in pixels (10-50 range)
+        """
+        # Clamp size to reasonable range
+        size = max(10, min(50, int(size)))
+        self.size = size
+        logger.info(f"Laser pointer size set to {size}px")

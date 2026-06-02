@@ -132,20 +132,32 @@ class PPTServer:
         @self.sio.event
         def laser_pointer_toggle(sid, data):
             """Handle laser pointer enable/disable."""
+            logger.debug(f"Received laser_pointer_toggle from {sid}, data: {data}")
+
             if sid != self.current_client_sid:
                 logger.warning(f"Laser toggle rejected from unauthorized client {sid}")
                 return
 
             try:
-                enabled = data.get('enabled', False) if isinstance(data, dict) else False
-                logger.info(f"Laser pointer toggle: {enabled}")
+                # Handle both dict and direct boolean
+                if isinstance(data, dict):
+                    enabled = data.get('enabled', False)
+                elif isinstance(data, bool):
+                    enabled = data
+                else:
+                    logger.warning(f"Unexpected data type for laser_pointer_toggle: {type(data)}")
+                    enabled = False
+
+                logger.info(f"Laser pointer toggle: {enabled} (current state: {self.laser_overlay.enabled})")
 
                 if enabled:
                     self.laser_overlay.enable()
                 else:
                     self.laser_overlay.disable()
+
+                logger.info(f"Laser pointer toggle complete, new state: {self.laser_overlay.enabled}")
             except Exception as e:
-                logger.error(f"Error handling laser pointer toggle: {e}")
+                logger.error(f"Error handling laser pointer toggle: {e}", exc_info=True)
 
         @self.sio.event
         def laser_pointer_move(sid, data):
@@ -165,6 +177,46 @@ class PPTServer:
                     self.laser_overlay.update_position(x, y)
             except Exception as e:
                 logger.error(f"Error handling laser pointer move: {e}")
+
+        @self.sio.event
+        def laser_pointer_color(sid, data):
+            """Handle laser pointer color change."""
+            if sid != self.current_client_sid:
+                logger.warning(f"Laser color rejected from unauthorized client {sid}")
+                return
+
+            try:
+                if isinstance(data, dict):
+                    color = data.get('color', 'red')
+                elif isinstance(data, str):
+                    color = data
+                else:
+                    color = 'red'
+
+                logger.info(f"Laser pointer color change: {color}")
+                self.laser_overlay.set_color(color)
+            except Exception as e:
+                logger.error(f"Error handling laser pointer color: {e}")
+
+        @self.sio.event
+        def laser_pointer_size(sid, data):
+            """Handle laser pointer size change."""
+            if sid != self.current_client_sid:
+                logger.warning(f"Laser size rejected from unauthorized client {sid}")
+                return
+
+            try:
+                if isinstance(data, dict):
+                    size = data.get('size', 20)
+                elif isinstance(data, (int, float)):
+                    size = data
+                else:
+                    size = 20
+
+                logger.info(f"Laser pointer size change: {size}")
+                self.laser_overlay.set_size(size)
+            except Exception as e:
+                logger.error(f"Error handling laser pointer size: {e}")
 
     def start(self, port):
         """
